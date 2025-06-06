@@ -10,8 +10,8 @@ class NotaBase(SQLModel):
 
 class Nota(NotaBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    createdAt: Optional[datetime] = Field(default_factory=datetime.utcnow, nullable=False)
-    updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}, nullable=False)
+    createdAt: Optional[datetime] = Field(default_factory=datetime.now, nullable=False)
+    updatedAt: Optional[datetime] = Field(default_factory=datetime.now, sa_column_kwargs={"onupdate": datetime.now}, nullable=False)
 
 class NotaCreate(NotaBase):
     pass
@@ -27,11 +27,7 @@ engine = create_engine(f"sqlite:///{DATABASE_FILE}", echo=True)
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
-app = FastAPI(
-    title="API de Notas com SQLite e Datas",
-    description="Uma API para gerenciar notas com persistência e datas automáticas.",
-    version="2.1.0"
-)
+app = FastAPI()
 
 @app.on_event("startup")
 def on_startup():
