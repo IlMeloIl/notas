@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { 
+  View, 
+  StyleSheet, 
+  FlatList, 
+  TouchableOpacity, 
+  StatusBar, 
+  RefreshControl 
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { HomeScreenNavigationProp } from '@/types/Navigation';
@@ -21,7 +28,6 @@ const HomeScreen: React.FC = () => {
     getNotes,
     searchQuery,
     searchResults,
-    setSearchQuery,
     clearSearch
   } = useNotes();
 
@@ -29,12 +35,14 @@ const HomeScreen: React.FC = () => {
   const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
   const displayedNotes = searchQuery ? searchResults : notes;
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    setHasAttemptedLoad(true);
+    if (!hasAttemptedLoad) {
+      setHasAttemptedLoad(true);
+    }
     await getNotes();
     setRefreshing(false);
-  };
+  }, [getNotes, hasAttemptedLoad]);
   
   const handleCreateNote = () => {
     navigation.navigate('NoteEdit', {});
@@ -44,68 +52,36 @@ const HomeScreen: React.FC = () => {
     <NoteItem note={item} />
   );
   
-  const renderContent = () => {
-    if (loading && hasAttemptedLoad && notes.length === 0) {
-      return <LoadingIndicator fullscreen text="Carregando notas..." />;
-    }
-
-    if (error && hasAttemptedLoad) {
-      return (
-        <View style={styles.centerContainer}>
-          <Feather name="alert-circle" size={48} color={theme.colors.feedback.error} />
-          <Typography style={styles.errorText}>{error}</Typography>
-          <TouchableOpacity style={styles.retryButton} onPress={getNotes}>
-            <Typography style={styles.retryText}>Tentar novamente</Typography>
+  const renderEmptyListComponent = () => (
+    <View style={styles.centerContainer}>
+      {searchQuery ? (
+        <>
+          <Feather name="search" size={48} color={theme.colors.text.secondary} />
+          <Typography variant="h2" style={styles.emptyStateTitle}>
+            Nenhuma nota encontrada
+          </Typography>
+          <Typography style={styles.emptyStateText}>
+            Nenhuma nota corresponde à sua busca.
+          </Typography>
+          <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
+            <Typography style={styles.clearSearchText}>Limpar busca</Typography>
           </TouchableOpacity>
-        </View>
-      );
-    }
-
-    if (displayedNotes.length === 0) {
-      return (
-        <View style={styles.centerContainer}>
-          {searchQuery ? (
-            <>
-              <Feather name="search" size={48} color={theme.colors.text.secondary} />
-              <Typography variant="h2" style={styles.emptyStateTitle}>
-                Nenhuma nota encontrada
-              </Typography>
-              <Typography style={styles.emptyStateText}>
-                Nenhuma nota corresponde aos termos da busca.
-              </Typography>
-              <TouchableOpacity style={styles.clearSearchButton} onPress={clearSearch}>
-                <Typography style={styles.clearSearchText}>Limpar busca</Typography>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <Feather name="file-text" size={48} color={theme.colors.text.secondary} />
-              <Typography variant="h2" style={styles.emptyStateTitle}>
-                {hasAttemptedLoad ? "Nenhuma nota" : "Bem-vindo ao NotesApp"}
-              </Typography>
-              <Typography style={styles.emptyStateText}>
-                {hasAttemptedLoad 
-                  ? "Toque no botão + para criar sua primeira nota."
-                  : "Faça pull-to-refresh para carregar notas ou toque no botão + para criar sua primeira nota."}
-              </Typography>
-            </>
-          )}
-        </View>
-      );
-    }
-
-    return (
-      <FlatList
-        data={displayedNotes}
-        renderItem={renderNoteItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-      />
-    );
-  };
+        </>
+      ) : (
+        <>
+          <Feather name="file-text" size={48} color={theme.colors.text.secondary} />
+          <Typography variant="h2" style={styles.emptyStateTitle}>
+            {hasAttemptedLoad ? "Nenhuma nota" : "Bem-vindo"}
+          </Typography>
+          <Typography style={styles.emptyStateText}>
+            {hasAttemptedLoad 
+              ? "Puxe para baixo para atualizar ou toque no + para criar uma nota."
+              : "Puxe para baixo para carregar suas notas."}
+          </Typography>
+        </>
+      )}
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -123,7 +99,34 @@ const HomeScreen: React.FC = () => {
       
       {/* Conteúdo Principal */}
       <View style={styles.content}>
-        {renderContent()}
+        {loading && !refreshing && !hasAttemptedLoad ? (
+          <LoadingIndicator fullscreen text="Carregando notas..." />
+        ) : error ? (
+          <View style={styles.centerContainer}>
+            <Feather name="alert-circle" size={48} color={theme.colors.feedback.error} />
+            <Typography style={styles.errorText}>{error}</Typography>
+            <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+              <Typography style={styles.retryText}>Tentar novamente</Typography>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FlatList
+            data={displayedNotes}
+            renderItem={renderNoteItem}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={renderEmptyListComponent}
+            contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={theme.colors.text.primary}
+                colors={[theme.colors.accent.primary]}
+              />
+            }
+          />
+        )}
       </View>
       
       {/* Botão de Adicionar Nota */}
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
+    flexGrow: 1, 
     padding: theme.spacing.md,
     paddingBottom: theme.spacing.lg + 60, 
   },
@@ -214,4 +218,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen; 
+export default HomeScreen;
