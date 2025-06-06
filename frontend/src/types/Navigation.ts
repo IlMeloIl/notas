@@ -4,8 +4,8 @@ import { Note } from './Note';
 
 export type RootStackParamList = {
   Home: undefined;
-  NoteView: { noteId: string };
-  NoteEdit: { noteId?: string };
+  NoteView: { noteId: number };
+  NoteEdit: { noteId?: number };
 };
 
 export type HomeScreenNavigationProp = StackNavigationProp<

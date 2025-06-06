@@ -21,7 +21,7 @@ export const getNotes = async (): Promise<Note[]> => {
   }
 };
 
-export const getNoteById = async (id: string): Promise<Note | null> => {
+export const getNoteById = async (id: number): Promise<Note | null> => {
     try {
         const response = await apiClient.get<Note>(`/notas/${id}`);
         return response.data;
@@ -42,7 +42,7 @@ export const createNote = async (noteData: CreateNoteDTO): Promise<Note> => {
   }
 };
 
-export const updateNote = async (id: string, noteData: UpdateNoteDTO): Promise<Note> => {
+export const updateNote = async (id: number, noteData: UpdateNoteDTO): Promise<Note> => {
   try {
     const response = await apiClient.put<Note>(`/notas/${id}`, noteData);
     return response.data;
@@ -52,7 +52,7 @@ export const updateNote = async (id: string, noteData: UpdateNoteDTO): Promise<N
   }
 };
 
-export const deleteNote = async (id: string): Promise<void> => {
+export const deleteNote = async (id: number): Promise<void> => {
   try {
     await apiClient.delete(`/notas/${id}`);
   } catch (error) {

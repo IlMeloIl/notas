@@ -1,100 +1,95 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Depends
 from typing import List, Optional
-import uuid
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+
+class NotaBase(SQLModel):
+    title: str
+    content: Optional[str] = None
+
+class Nota(NotaBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    createdAt: Optional[datetime] = Field(default_factory=datetime.utcnow, nullable=False)
+    updatedAt: Optional[datetime] = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow}, nullable=False)
+
+class NotaCreate(NotaBase):
+    pass
+
+class NotaRead(NotaBase):
+    id: int
+    createdAt: datetime
+    updatedAt: datetime
+
+DATABASE_FILE = "database.sqlite"
+engine = create_engine(f"sqlite:///{DATABASE_FILE}", echo=True)
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
 
 app = FastAPI(
-    title="API de Notas",
-    description="Uma API simples para gerenciar notas.",
-    version="1.0.0"
+    title="API de Notas com SQLite e Datas",
+    description="Uma API para gerenciar notas com persistência e datas automáticas.",
+    version="2.1.0"
 )
 
-origins = ["*"]
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-class NotaBase(BaseModel):
-    title: str
-    content: Optional[str] = None
+def get_session():
+    with Session(engine) as session:
+        yield session
 
-class Nota(NotaBase):
-    id: str
+@app.post("/notas/", response_model=NotaRead, status_code=201)
+def criar_nota(nota: NotaCreate, session: Session = Depends(get_session)):
+    db_nota = Nota.from_orm(nota)
+    session.add(db_nota)
+    session.commit()
+    session.refresh(db_nota)
+    return db_nota
 
-db_notas: List[Nota] = [
-    Nota(id=str(uuid.uuid4()), title="Nota de Exemplo da API", content="Se você está vendo isso, a conexão funcionou!")
-]
+@app.get("/notas/", response_model=List[NotaRead])
+def listar_notas(session: Session = Depends(get_session)):
+    notas = session.exec(select(Nota)).all()
+    return notas
 
-@app.post("/notas/", response_model=Nota, status_code=201)
-def criar_nota(nota_data: NotaBase):
-    """
-    Cria uma nova nota.
-    - Recebe um `title` e um `content` opcional.
-    - Gera um `id` único.
-    - Adiciona a nova nota à lista `db_notas`.
-    - Retorna a nota completa que foi criada.
-    """
-    nova_nota = Nota(
-        id=str(uuid.uuid4()),
-        title=nota_data.title,
-        content=nota_data.content
-    )
-    db_notas.append(nova_nota)
-    return nova_nota
+@app.get("/notas/{nota_id}", response_model=NotaRead)
+def ler_nota(nota_id: int, session: Session = Depends(get_session)):
+    nota = session.get(Nota, nota_id)
+    if not nota:
+        raise HTTPException(status_code=404, detail="Nota não encontrada")
+    return nota
 
-@app.get("/notas/", response_model=List[Nota])
-def listar_notas():
-    """
-    Retorna uma lista com todas as notas existentes.
-    """
-    return db_notas
-
-@app.get("/notas/{nota_id}", response_model=Nota)
-def ler_nota(nota_id: str):
-    """
-    Retorna uma nota existente.
-    - Busca a nota pelo `nota_id`
-    - Se não encontrar, retorna um error 404.
-    - Se encontrar, retorna a nota.
-    """
-    for nota in db_notas:
-        if nota.id == nota_id:
-            return nota
-    raise HTTPException(status_code=404, detail="Nota não encontrada")
-
-@app.put("/notas/{nota_id}", response_model=Nota)
-def atualizar_nota(nota_id: str, nota_data: NotaBase):
-    """
-    Atualiza uma nota existente.
-    - Busca a nota pelo `nota_id`.
-    - Se não encontrar, retorna um erro 404.
-    - Se encontrar, atualiza o `title` e/ou `content`.
-    - Retorna a nota atualizada.
-    """
-    for index, nota in enumerate(db_notas):
-        if nota.id == nota_id:
-            nota_atualizada = nota.copy(update=nota_data.dict(exclude_unset=True))
-            db_notas[index] = nota_atualizada
-            return nota_atualizada
-    raise HTTPException(status_code=404, detail="Nota não encontrada")
+@app.put("/notas/{nota_id}", response_model=NotaRead)
+def atualizar_nota(nota_id: int, nota_data: NotaCreate, session: Session = Depends(get_session)):
+    db_nota = session.get(Nota, nota_id)
+    if not db_nota:
+        raise HTTPException(status_code=404, detail="Nota não encontrada")
+    
+    nota_dict = nota_data.dict(exclude_unset=True)
+    for key, value in nota_dict.items():
+        setattr(db_nota, key, value)
+        
+    session.add(db_nota)
+    session.commit()
+    session.refresh(db_nota)
+    return db_nota
 
 @app.delete("/notas/{nota_id}", status_code=204)
-def deletar_nota(nota_id: str):
-    """
-    Deleta uma nota existente.
-    - Busca a nota pelo `nota_id`.
-    - Se não encontrar, retorna um erro 404.
-    - Se encontrar, remove a nota da lista.
-    - Retorna uma resposta de sucesso sem conteúdo (204).
-    """
-    nota_encontrada = next((nota for nota in db_notas if nota.id == nota_id), None)
-    if not nota_encontrada:
+def deletar_nota(nota_id: int, session: Session = Depends(get_session)):
+    nota = session.get(Nota, nota_id)
+    if not nota:
         raise HTTPException(status_code=404, detail="Nota não encontrada")
-    db_notas.remove(nota_encontrada)
+    
+    session.delete(nota)
+    session.commit()
     return

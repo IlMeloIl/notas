@@ -13,50 +13,32 @@ interface NoteItemProps {
 const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp);
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
+    
     if (diffDays === 0) {
-      return `Hoje, ${date.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })}`;
+      return `Hoje, ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
     }
-
     if (diffDays === 1) {
       return 'Ontem';
     }
-
     if (diffDays < 7) {
       const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
       return weekdays[date.getDay()];
     }
-
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    });
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
   };
 
   const truncateContent = (content: string, maxLength = 80): string => {
-
-    if (!content.trim()) return '';
+    if (!content || !content.trim()) return '';
     const normalizedContent = content.replace(/\n+/g, ' ').trim();
-
     if (normalizedContent.length <= maxLength) return normalizedContent;
-
     const truncated = normalizedContent.substring(0, maxLength);
     const lastSpaceIndex = truncated.lastIndexOf(' ');
-
-    if (lastSpaceIndex > maxLength * 0.8) {
-      return truncated.substring(0, lastSpaceIndex) + '...';
-    } else {
-      return truncated + '...';
-    }
+    return truncated.substring(0, lastSpaceIndex > 0 ? lastSpaceIndex : maxLength) + '...';
   };
 
   const handlePress = () => {
@@ -64,21 +46,14 @@ const NoteItem: React.FC<NoteItemProps> = ({ note }) => {
   };
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={handlePress}
-      activeOpacity={0.7}
-      testID={`note-item-${note.id}`}
-    >
+    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
       <View style={styles.contentContainer}>
         <Typography variant="h2" style={styles.title} numberOfLines={1}>
           {note.title}
         </Typography>
-
         <Typography style={styles.preview} numberOfLines={2}>
           {truncateContent(note.content)}
         </Typography>
-
         <View style={styles.footer}>
           <Typography variant="caption" style={styles.date}>
             {formatDate(note.updatedAt)}
@@ -120,4 +95,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(NoteItem); 
+export default memo(NoteItem);

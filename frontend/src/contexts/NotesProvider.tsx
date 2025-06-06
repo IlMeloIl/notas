@@ -45,7 +45,7 @@ export const NotesProvider: React.FC<NotesProviderProps> = ({ children }) => {
     return notes; 
   };
 
-  const getNoteById = useCallback(async (id: string): Promise<Note | null> => {
+  const getNoteById = useCallback(async (id: number): Promise<Note | null> => {
     try {
       return await apiService.getNoteById(id);
     } catch (err: any) {
@@ -71,7 +71,7 @@ export const NotesProvider: React.FC<NotesProviderProps> = ({ children }) => {
     }
   }, [loadNotes]);
 
-  const updateNote = useCallback(async (id: string, noteData: UpdateNoteDTO): Promise<Note | null> => {
+  const updateNote = useCallback(async (id: number, noteData: UpdateNoteDTO): Promise<Note | null> => {
     setLoading(true);
     try {
       const updatedNote = await apiService.updateNote(id, noteData);
@@ -87,7 +87,7 @@ export const NotesProvider: React.FC<NotesProviderProps> = ({ children }) => {
     }
   }, [loadNotes]);
 
-  const deleteNote = useCallback(async (id: string): Promise<boolean> => {
+  const deleteNote = useCallback(async (id: number): Promise<boolean> => {
     setLoading(true);
     try {
       await apiService.deleteNote(id);
