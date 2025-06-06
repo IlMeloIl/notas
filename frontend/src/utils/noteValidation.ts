@@ -15,10 +15,7 @@ export function validateNewNote(data: CreateNoteDTO): string | null {
     return 'O título não pode ter mais de 100 caracteres';
   }
   
-  // Poderia adicionar mais validações aqui, como tamanho máximo do conteúdo
-  // ou verificação de caracteres inválidos, se necessário
-  
-  return null; // Sem erros
+  return null;
 }
 
 /**
@@ -35,8 +32,6 @@ export function validateNoteUpdate(data: UpdateNoteDTO): string | null {
   if (data.title && data.title.length > 100) {
     return 'O título não pode ter mais de 100 caracteres';
   }
-  
-  // Poderia adicionar mais validações aqui, como tamanho máximo do conteúdo
-  
-  return null; // Sem erros
+    
+  return null;
 } 

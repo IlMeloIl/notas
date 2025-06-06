@@ -30,36 +30,30 @@ const NoteViewScreen: React.FC = () => {
   const [note, setNote] = useState<Note | null>(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
 
-  // Função para carregar a nota
   const loadNote = useCallback(async () => {
     const loadedNote = await getNoteById(noteId);
     setNote(loadedNote);
   }, [noteId, getNoteById]);
 
-  // Recarregar a nota sempre que a tela receber foco
   useFocusEffect(
     useCallback(() => {
       loadNote();
     }, [loadNote])
   );
 
-  // Navegação para editar nota
   const handleEdit = () => {
     if (note) {
       navigation.navigate('NoteEdit', { noteId: note.id });
     }
   };
 
-  // Mostrar diálogo de confirmação para exclusão
   const handleDeletePress = () => {
     setDeleteDialogVisible(true);
   };
 
-  // Confirmar e executar exclusão
   const handleConfirmDelete = async () => {
     if (note) {
       setDeleteDialogVisible(false);
-      
       const success = await deleteNote(note.id);
       if (success) {
         navigation.goBack();
@@ -73,7 +67,6 @@ const NoteViewScreen: React.FC = () => {
     }
   };
 
-  // Formatar data para exibição
   const formatDate = (timestamp: number): string => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('pt-BR', {
@@ -85,12 +78,10 @@ const NoteViewScreen: React.FC = () => {
     });
   };
 
-  // Voltar para a tela anterior
   const handleBack = () => {
     navigation.goBack();
   };
 
-  // Renderizar botões de ação no cabeçalho
   const renderHeaderRight = () => (
     <View style={styles.headerActions}>
       <TouchableOpacity 
@@ -119,14 +110,12 @@ const NoteViewScreen: React.FC = () => {
     </View>
   );
 
-  // Renderizar o conteúdo principal baseado no estado
   const renderContent = () => {
-    // Estado de carregamento
+  
     if (loading && !note) {
       return <LoadingIndicator fullscreen text="Carregando nota..." />;
     }
 
-    // Estado de erro
     if (error) {
       return (
         <View style={styles.centerContainer}>
@@ -138,8 +127,7 @@ const NoteViewScreen: React.FC = () => {
         </View>
       );
     }
-
-    // Nota não encontrada
+  
     if (!note) {
       return (
         <View style={styles.centerContainer}>
@@ -157,7 +145,6 @@ const NoteViewScreen: React.FC = () => {
       );
     }
 
-    // Exibir a nota
     return (
       <ScrollView 
         style={styles.scrollView}
@@ -262,7 +249,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   content: {
-    lineHeight: 24, // Melhor legibilidade para textos longos
+    lineHeight: 24,
   },
   centerContainer: {
     flex: 1,

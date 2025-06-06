@@ -3,15 +3,12 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '@/types/Navigation';
 
-// Importação das telas
 import HomeScreen from '@/screens/HomeScreen';
 import NoteViewScreen from '@/screens/NoteViewScreen';
 import NoteEditScreen from '@/screens/NoteEditScreen';
 
-// Importação do tema
 import theme from '@/constants/theme';
 
-// Criando um objeto de tema compatível com o NavigationContainer
 const navigationTheme = {
   dark: true,
   colors: {
@@ -22,7 +19,6 @@ const navigationTheme = {
     border: theme.colors.border.light,
     notification: theme.colors.accent.secondary,
   },
-  // Propriedade necessária para o tipo Theme
   fonts: DefaultTheme.fonts
 };
 

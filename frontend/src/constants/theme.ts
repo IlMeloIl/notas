@@ -1,48 +1,34 @@
-/**
- * Tema Escuro para o Aplicativo de Notas
- * 
- * Este arquivo define o sistema de design para o tema escuro do aplicativo,
- * incluindo paleta de cores, tipografia, espaçamento e formas.
- */
-
-// Paleta de Cores
-export const colors = {
-  // Cores de fundo
+export const colors = { 
   background: {
-    primary: '#121212',     // Fundo principal do aplicativo
-    secondary: '#1E1E1E',   // Fundo de cabeçalhos e barras
-    tertiary: '#2D2D2D',    // Fundo de cartões e inputs
+    primary: '#121212',    
+    secondary: '#1E1E1E',  
+    tertiary: '#2D2D2D',   
   },
   
-  // Cores de texto
   text: {
-    primary: '#FFFFFF',     // Texto principal
-    secondary: '#AAAAAA',   // Texto secundário/descrições
-    tertiary: '#888888',    // Texto de menor ênfase
-    disabled: '#666666',    // Texto desabilitado
+    primary: '#FFFFFF',    
+    secondary: '#AAAAAA',  
+    tertiary: '#888888',   
+    disabled: '#666666',   
   },
-  
-  // Cores de ação/destaque
+ 
   accent: {
-    primary: '#4A69BD',     // Cor de destaque principal (azul)
-    secondary: '#8C7AE6',   // Cor de destaque secundária (roxo)
+    primary: '#4A69BD',    
+    secondary: '#8C7AE6',  
   },
-  
-  // Cores de feedback
+ 
   feedback: {
-    success: '#4CAF50',     // Verde para sucesso
-    error: '#FF5252',       // Vermelho para erro
-    warning: '#FFC107',     // Amarelo para aviso
-    info: '#2196F3',        // Azul para informação
+    success: '#4CAF50',    
+    error: '#FF5252',      
+    warning: '#FFC107',    
+    info: '#2196F3',       
   },
-  
-  // Cores de borda
+ 
   border: {
-    light: '#444444',       // Bordas claras
-    dark: '#333333',        // Bordas escuras
+    light: '#444444',      
+    dark: '#333333',       
   },
   
-  // Cores comuns
   common: {
     black: '#000000',
     white: '#FFFFFF',
@@ -50,55 +36,48 @@ export const colors = {
   }
 };
 
-// Tipografia
 export const typography = {
-  // Tamanhos de fonte
   fontSize: {
-    xs: 12,                // Extra pequeno
-    sm: 14,                // Pequeno
-    base: 16,              // Tamanho base
-    md: 18,                // Médio
-    lg: 20,                // Grande
-    xl: 24,                // Extra grande
-    xxl: 32,               // Título grande
+    xs: 12,               
+    sm: 14,               
+    base: 16,             
+    md: 18,               
+    lg: 20,               
+    xl: 24,               
+    xxl: 32,              
   },
   
-  // Pesos de fonte
   fontWeight: {
-    normal: '400',         // Normal
-    medium: '500',         // Médio
-    semibold: '600',       // Semi-negrito
-    bold: '700',           // Negrito
+    normal: '400',        
+    medium: '500',        
+    semibold: '600',      
+    bold: '700',          
   },
-  
-  // Família de fonte
+ 
   fontFamily: {
-    regular: 'System',     // Fonte padrão do sistema
+    regular: 'System',    
   },
 };
 
-// Espaçamento
 export const spacing = {
-  xs: 4,                   // Extra pequeno
-  sm: 8,                   // Pequeno
-  md: 16,                  // Médio
-  lg: 24,                  // Grande
-  xl: 32,                  // Extra grande
-  xxl: 48,                 // Extra extra grande
+  xs: 4,                  
+  sm: 8,                  
+  md: 16,                 
+  lg: 24,                 
+  xl: 32,                 
+  xxl: 48,                
 };
 
-// Bordas e Sombras
 export const shape = {
-  // Raios de borda
+ 
   borderRadius: {
-    xs: 4,                 // Extra pequeno
-    sm: 8,                 // Pequeno
-    md: 12,                // Médio
-    lg: 16,                // Grande
-    full: 9999,            // Círculo/Pílula
+    xs: 4,                
+    sm: 8,                
+    md: 12,               
+    lg: 16,               
+    full: 9999,           
   },
   
-  // Sombras (sutis para tema escuro)
   shadows: {
     small: {
       shadowColor: '#000',
@@ -124,7 +103,6 @@ export const shape = {
   },
 };
 
-// Tema completo exportado como padrão
 const theme = {
   colors,
   typography,

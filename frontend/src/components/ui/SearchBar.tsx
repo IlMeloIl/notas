@@ -34,7 +34,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
   
-  // Animação para o foco
   const animatedValue = useRef(new Animated.Value(0)).current;
   
   const handleFocus = () => {
@@ -73,7 +72,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     Keyboard.dismiss();
   };
   
-  // Interpolate animation values
   const iconColor_interpolate = animatedValue.interpolate({
     inputRange: [0, 1],
     outputRange: [iconColor, theme.colors.accent.primary],

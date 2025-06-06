@@ -25,40 +25,30 @@ const HomeScreen: React.FC = () => {
     clearSearch
   } = useNotes();
 
-  // Estado para controlar o pull-to-refresh
   const [refreshing, setRefreshing] = useState(false);
-  // Estado para controlar se já carregamos as notas pelo menos uma vez
   const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
-
-  // Determinar quais notas exibir (resultados de busca ou todas as notas)
   const displayedNotes = searchQuery ? searchResults : notes;
 
-  // Função para pull-to-refresh
   const handleRefresh = async () => {
     setRefreshing(true);
     setHasAttemptedLoad(true);
     await getNotes();
     setRefreshing(false);
   };
-
-  // Navegação para criar nova nota
+  
   const handleCreateNote = () => {
     navigation.navigate('NoteEdit', {});
   };
 
-  // Renderizar item da lista de notas
   const renderNoteItem = ({ item }: { item: Note }) => (
     <NoteItem note={item} />
   );
-
-  // Renderizar conteúdo principal baseado no estado
+  
   const renderContent = () => {
-    // Estado de carregamento inicial - só mostrado se já tentamos carregar
     if (loading && hasAttemptedLoad && notes.length === 0) {
       return <LoadingIndicator fullscreen text="Carregando notas..." />;
     }
 
-    // Estado de erro - só mostrado se já tentamos carregar
     if (error && hasAttemptedLoad) {
       return (
         <View style={styles.centerContainer}>
@@ -71,7 +61,6 @@ const HomeScreen: React.FC = () => {
       );
     }
 
-    // Estado de lista vazia ou não carregada ainda
     if (displayedNotes.length === 0) {
       return (
         <View style={styles.centerContainer}>
@@ -105,7 +94,6 @@ const HomeScreen: React.FC = () => {
       );
     }
 
-    // Lista de notas
     return (
       <FlatList
         data={displayedNotes}
@@ -153,7 +141,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: theme.colors.background.secondary,
-    paddingTop: theme.spacing.lg, // Espaço adicional para o StatusBar
+    paddingTop: theme.spacing.lg, 
     paddingBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.md,
   },
@@ -170,7 +158,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: theme.spacing.md,
-    paddingBottom: theme.spacing.lg + 60, // Espaço extra na parte inferior para o FAB
+    paddingBottom: theme.spacing.lg + 60, 
   },
   centerContainer: {
     flex: 1,

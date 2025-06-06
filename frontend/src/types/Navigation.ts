@@ -2,14 +2,12 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Note } from './Note';
 
-// Definição dos parâmetros para cada rota
 export type RootStackParamList = {
   Home: undefined;
   NoteView: { noteId: string };
-  NoteEdit: { noteId?: string }; // opcional para criação de nova nota
+  NoteEdit: { noteId?: string };
 };
 
-// Tipos para navegação entre telas
 export type HomeScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   'Home'
@@ -25,7 +23,6 @@ export type NoteEditScreenNavigationProp = StackNavigationProp<
   'NoteEdit'
 >;
 
-// Tipos para acesso aos parâmetros de rota
 export type NoteViewScreenRouteProp = RouteProp<
   RootStackParamList,
   'NoteView'

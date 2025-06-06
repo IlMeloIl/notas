@@ -39,7 +39,6 @@ const NoteEditScreen: React.FC = () => {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Carregar dados da nota se estiver editando
   useEffect(() => {
     const loadNote = async () => {
       if (noteId) {
@@ -56,7 +55,6 @@ const NoteEditScreen: React.FC = () => {
     loadNote();
   }, [noteId, getNoteById]);
 
-  // Verificar se há alterações não salvas
   const hasUnsavedChanges = useCallback(() => {
     if (isEditing) {
       return title !== initialNote.title || content !== initialNote.content;
@@ -64,7 +62,6 @@ const NoteEditScreen: React.FC = () => {
     return title.trim() !== '' || content.trim() !== '';
   }, [title, content, initialNote, isEditing]);
 
-  // Interceptar o botão de voltar do hardware
   useFocusEffect(
     useCallback(() => {
       const subscription = BackHandler.addEventListener(
@@ -72,17 +69,15 @@ const NoteEditScreen: React.FC = () => {
         () => {
           if (hasUnsavedChanges()) {
             setShowDiscardDialog(true);
-            return true; // Previne a ação padrão de voltar
+            return true;
           }
-          return false; // Permite a ação padrão de voltar
+          return false;
         }
       );
-
       return () => subscription.remove();
     }, [hasUnsavedChanges])
   );
 
-  // Validar o título
   const validateTitle = () => {
     if (!title.trim()) {
       setTitleError('O título é obrigatório');
@@ -96,44 +91,34 @@ const NoteEditScreen: React.FC = () => {
     return true;
   };
 
-  // Validar o conteúdo (opcional)
   const validateContent = () => {
-    // Você pode adicionar validações específicas para o conteúdo se necessário
-    // Por padrão, permitimos conteúdo vazio
     setContentError('');
     return true;
   };
 
-  // Validar o formulário completo
   const validateForm = () => {
     const isTitleValid = validateTitle();
     const isContentValid = validateContent();
     return isTitleValid && isContentValid;
   };
 
-  // Salvar a nota
   const handleSave = async () => {
     if (!validateForm()) return;
 
     try {
       setIsSaving(true);
-
-      // Preparar os dados da nota
       const noteData: CreateNoteDTO | UpdateNoteDTO = {
         title: title.trim(),
         content: content.trim()
       };
 
       if (isEditing && noteId) {
-        // Atualizar nota existente
         const updatedNote = await updateNote(noteId, noteData);
         if (updatedNote) {
-          // Atualizar estado inicial
           setInitialNote({ title: updatedNote.title, content: updatedNote.content });
           navigation.goBack();
         }
       } else {
-        // Criar nova nota
         const newNote = await createNote(noteData as CreateNoteDTO);
         if (newNote) {
           navigation.goBack();
@@ -146,7 +131,6 @@ const NoteEditScreen: React.FC = () => {
     }
   };
 
-  // Tentar voltar/cancelar
   const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowDiscardDialog(true);
@@ -155,7 +139,6 @@ const NoteEditScreen: React.FC = () => {
     }
   };
 
-  // Descartar alterações e voltar
   const handleDiscard = () => {
     setShowDiscardDialog(false);
     navigation.goBack();
@@ -212,7 +195,7 @@ const NoteEditScreen: React.FC = () => {
             error={titleError}
             placeholder="Título da nota"
             returnKeyType="next"
-            autoFocus={!isEditing} // Focar no título apenas para novas notas
+            autoFocus={!isEditing}
             fullWidth
           />
           

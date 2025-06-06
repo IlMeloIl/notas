@@ -1,4 +1,3 @@
-// Exportação centralizada de todos os componentes UI
 export * from './Button';
 export * from './TextField';
 export * from './Typography';

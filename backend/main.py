@@ -2,11 +2,22 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="API de Notas",
     description="Uma API simples para gerenciar notas.",
     version="1.0.0"
+)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class NotaBase(BaseModel):
@@ -17,7 +28,7 @@ class Nota(NotaBase):
     id: str
 
 db_notas: List[Nota] = [
-    Nota(id=str(uuid.uuid4()), title="Nota de Exemplo", content="Este é o conteúdo da primeira nota.")
+    Nota(id=str(uuid.uuid4()), title="Nota de Exemplo da API", content="Se você está vendo isso, a conexão funcionou!")
 ]
 
 @app.post("/notas/", response_model=Nota, status_code=201)
@@ -44,6 +55,19 @@ def listar_notas():
     """
     return db_notas
 
+@app.get("/notas/{nota_id}", response_model=Nota)
+def ler_nota(nota_id: str):
+    """
+    Retorna uma nota existente.
+    - Busca a nota pelo `nota_id`
+    - Se não encontrar, retorna um error 404.
+    - Se encontrar, retorna a nota.
+    """
+    for nota in db_notas:
+        if nota.id == nota_id:
+            return nota
+    raise HTTPException(status_code=404, detail="Nota não encontrada")
+
 @app.put("/notas/{nota_id}", response_model=Nota)
 def atualizar_nota(nota_id: str, nota_data: NotaBase):
     """
@@ -69,14 +93,8 @@ def deletar_nota(nota_id: str):
     - Se encontrar, remove a nota da lista.
     - Retorna uma resposta de sucesso sem conteúdo (204).
     """
-    nota_encontrada = None
-    for nota in db_notas:
-        if nota.id == nota_id:
-            nota_encontrada = nota
-            break
-    
+    nota_encontrada = next((nota for nota in db_notas if nota.id == nota_id), None)
     if not nota_encontrada:
         raise HTTPException(status_code=404, detail="Nota não encontrada")
-        
     db_notas.remove(nota_encontrada)
     return

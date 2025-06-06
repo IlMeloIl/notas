@@ -1,15 +1,7 @@
-/**
- * Serviço para gerenciar persistência de notas usando AsyncStorage
- * 
- * Este serviço encapsula todas as operações de armazenamento
- * e fornece uma API para manipulação de notas no AsyncStorage.
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Note, CreateNoteDTO, UpdateNoteDTO } from '@/types/Note';
 import { createNote } from '@/utils/noteFactory';
 
-// Chave para armazenar todas as notas no AsyncStorage
 const NOTES_STORAGE_KEY = '@NotesApp:notes';
 
 /**
@@ -128,7 +120,7 @@ export class StorageService {
       const notes = await this.getNotes();
       const filteredNotes = notes.filter(note => note.id !== id);
       
-      // Se o comprimento não mudou, a nota não foi encontrada
+      
       if (filteredNotes.length === notes.length) return false;
       
       await this.saveNotes(filteredNotes);
@@ -178,5 +170,4 @@ export class StorageService {
   }
 }
 
-// Exporta uma instância única do serviço para ser usada em toda a aplicação
 export const storageService = new StorageService(); 

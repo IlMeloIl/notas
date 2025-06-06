@@ -11,7 +11,7 @@ import theme from '@/constants/theme';
 export type IconButtonSize = 'small' | 'medium' | 'large';
 
 interface IconButtonProps extends TouchableOpacityProps {
-  name: string; // Nome do ícone do Feather Icons
+  name: string;
   size?: IconButtonSize;
   color?: string;
   variant?: 'ghost' | 'solid';
@@ -27,14 +27,13 @@ export const IconButton: React.FC<IconButtonProps> = ({
   disabled,
   ...rest
 }) => {
-  // Definir tamanhos do ícone baseado na propriedade size
+  
   const iconSizes = {
     small: 16,
     medium: 20,
     large: 24,
   };
   
-  // Definir tamanhos do container baseado na propriedade size
   const containerSizes = {
     small: 32,
     medium: 40,

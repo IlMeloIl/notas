@@ -20,22 +20,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({ autoFocus = false }) => {
   const { searchQuery, setSearchQuery, loading } = useNotes();
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const [isFocused, setIsFocused] = useState(autoFocus);
-  
-  // Referência ao input para controle de foco
   const inputRef = useRef<TextInput>(null);
-  
-  // Animação para expandir/contrair a barra de pesquisa
   const animatedWidth = useRef(new Animated.Value(isFocused ? 1 : 0)).current;
-  
-  // Temporizador para debounce
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Atualizar o estado local quando a query global mudar
   useEffect(() => {
     setLocalQuery(searchQuery);
   }, [searchQuery]);
 
-  // Animar a barra de pesquisa quando o foco mudar
   useEffect(() => {
     Animated.timing(animatedWidth, {
       toValue: isFocused ? 1 : 0,
@@ -44,38 +36,30 @@ export const SearchBar: React.FC<SearchBarProps> = ({ autoFocus = false }) => {
     }).start();
   }, [isFocused, animatedWidth]);
 
-  // Aplicar debounce na pesquisa para evitar consultas excessivas
   const handleChangeText = (text: string) => {
     setLocalQuery(text);
-    
-    // Limpar o timeout anterior se existir
-    if (debounceTimeout.current) {
+      if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
-    
-    // Configurar um novo timeout para aplicar a pesquisa após 300ms
+
     debounceTimeout.current = setTimeout(() => {
       setSearchQuery(text);
     }, 300);
   };
 
-  // Limpar a pesquisa
   const handleClear = () => {
     setLocalQuery('');
     setSearchQuery('');
     inputRef.current?.focus();
   };
-
-  // Focar na barra de pesquisa
+  
   const handleFocus = () => {
     setIsFocused(true);
   };
 
-  // Remover foco da barra de pesquisa
   const handleBlur = () => {
     setIsFocused(false);
-    
-    // Se a barra estiver vazia ao perder o foco, podemos reduzir sua largura
+
     if (!localQuery) {
       Animated.timing(animatedWidth, {
         toValue: 0,
@@ -85,17 +69,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({ autoFocus = false }) => {
     }
   };
 
-  // Abrir a barra de pesquisa quando o ícone for tocado
   const handleSearchIconPress = () => {
     inputRef.current?.focus();
   };
 
-  // Fechar o teclado quando pressionar "submit"
   const handleSubmitEditing = () => {
     Keyboard.dismiss();
   };
 
-  // Calcular a largura animada da barra de pesquisa
   const inputWidth = animatedWidth.interpolate({
     inputRange: [0, 1],
     outputRange: ['85%', '100%'],

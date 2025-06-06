@@ -15,7 +15,6 @@ export const Card: React.FC<CardProps> = ({
   children,
   ...rest
 }) => {
-  // Determine o padding correto (usando o valor do tema ou um valor numérico direto)
   const paddingValue = typeof padding === 'string' 
     ? theme.spacing[padding] 
     : padding;

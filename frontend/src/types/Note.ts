@@ -6,11 +6,11 @@
  * Interface principal que representa uma nota completa
  */
 export interface Note {
-  id: string;        // Identificador único
-  title: string;     // Título da nota
-  content: string;   // Conteúdo/corpo da nota
-  createdAt: number; // Data de criação (timestamp)
-  updatedAt: number; // Data de última atualização (timestamp)
+  id: string;       
+  title: string;    
+  content: string;  
+  createdAt: number;
+  updatedAt: number;
 }
 
 /**
