@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Note, CreateNoteDTO, UpdateNoteDTO } from '@/types/Note';
 
-// **IMPORTANTE:** Substitua 'SEU_IP_LOCAL' pelo endereço de IP da sua máquina!
-const API_URL = 'http://SEU_IP_LOCAL:8000';
+// **IMPORTANTE:** Substitua 'localhost' pelo endereço de IP da sua máquina se quiser testar usando o celular com o Expo Go
+const API_URL = 'http://localhost:8000';
 
 const apiClient = axios.create({
   baseURL: API_URL,
