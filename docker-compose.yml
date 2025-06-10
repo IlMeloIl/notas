@@ -1,6 +1,7 @@
 services:
   backend:
     build: ./backend
+    image: ilmeloil/notas-backend:latest
     ports:
       - "8000:8000"
     volumes:
@@ -8,6 +9,7 @@ services:
 
   frontend:
     build: ./frontend
+    image: ilmeloil/notas-frontend:latest
     ports:
       - "8081:8081"
       - "19006:19006"
